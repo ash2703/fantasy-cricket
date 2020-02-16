@@ -39,10 +39,10 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.groupBox_2.setFont(font)
         self.groupBox_2.setStyleSheet("background-color: rgb(198, 195, 195);\n"
-"border: 3px black;\n"
-" margin-top: 0ex;\n"
-"\n"
-"")
+                                        "border: 3px black;\n"
+                                        " margin-top: 0ex;\n"
+                                        "\n"
+                                        "")
         self.groupBox_2.setObjectName("groupBox_2")
         self.label = QtWidgets.QLabel(self.groupBox_2)
         self.label.setGeometry(QtCore.QRect(20, 30, 130, 30))
@@ -82,7 +82,7 @@ class Ui_MainWindow(object):
         font.setPointSize(10)
         self.bat_count.setFont(font)
         self.bat_count.setStyleSheet("background-color: white;\n"
-"color:green;")
+                                        "color:green;")
         self.bat_count.setText("")
         self.bat_count.setAlignment(QtCore.Qt.AlignCenter)
         self.bat_count.setObjectName("bat_count")
@@ -175,9 +175,9 @@ class Ui_MainWindow(object):
         font.setPointSize(11)
         self.add_player.setFont(font)
         self.add_player.setStyleSheet("border-style: solid;\n"
-"    border-width: 0px;\n"
-"    border-color: white;\n"
-"color:rgb(0, 255, 255);")
+                                        "border-width: 0px;\n"
+                                        "border-color: white;\n"
+                                        "color:rgb(0, 255, 255);")
         self.add_player.setObjectName("add_player")
         self.points_used = QtWidgets.QLineEdit(self.centralwidget)
         self.points_used.setGeometry(QtCore.QRect(790, 130, 81, 31))
@@ -195,9 +195,9 @@ class Ui_MainWindow(object):
         self.groupBox_3 = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBox_3.setGeometry(QtCore.QRect(670, 170, 380, 420))
         self.groupBox_3.setStyleSheet("background-color: white;\n"
-"border-style: solid;\n"
-"    border-width: 2px;\n"
-"    border-color: black;")
+                                        "border-style: solid;\n"
+                                        "border-width: 2px;\n"
+                                        "border-color: black;")
         self.groupBox_3.setTitle("")
         self.groupBox_3.setObjectName("groupBox_3")
         self.label_7 = QtWidgets.QLabel(self.groupBox_3)
@@ -208,13 +208,13 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.label_7.setFont(font)
         self.label_7.setStyleSheet("border-style: solid;\n"
-"    border-width: 0px;\n"
-"    border-color: white;")
+                                "border-width: 0px;\n"
+                                "border-color: white;")
         self.label_7.setObjectName("label_7")
         self.team_name = QtWidgets.QLineEdit(self.groupBox_3)
         self.team_name.setGeometry(QtCore.QRect(130, 5, 211, 31))
         self.team_name.setStyleSheet("border-color: white;\n"
-"color:green;")
+                                        "color:green;")
         self.team_name.setText("")
         self.team_name.setObjectName("team_name")
         self.check_player = QtWidgets.QListWidget(self.groupBox_3)
@@ -223,9 +223,9 @@ class Ui_MainWindow(object):
         font.setPointSize(11)
         self.check_player.setFont(font)
         self.check_player.setStyleSheet("border-style: solid;\n"
-"    border-width: 0px;\n"
-"    border-color: white;\n"
-"color:rgb(0, 255, 255);")
+                                        "border-width: 0px;\n"
+                                        "border-color: white;\n"
+                                        "color:rgb(0, 255, 255);")
         self.check_player.setObjectName("check_player")
         self.label_8 = QtWidgets.QLabel(self.centralwidget)
         self.label_8.setGeometry(QtCore.QRect(540, 320, 31, 31))
@@ -287,6 +287,7 @@ class Ui_MainWindow(object):
         self.evaluate.setText(_translate("MainWindow", "Evaluate Score"))
         self.evaluate.setStatusTip(_translate("MainWindow", "Evaluate the score of selected team"))
         self.evaluate.setShortcut(_translate("MainWindow", "Ctrl+E"))
+        
 import resources_rc
 
 
