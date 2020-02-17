@@ -12,6 +12,15 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+
+        self.bat = 0
+        self.bow = 0
+        self.ar = 0
+        self.wk = 0
+        self.used = 0
+        self.avail = 0
+        self.name = ""
+
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1125, 649)
         MainWindow.setBaseSize(QtCore.QSize(0, 0))
@@ -83,7 +92,7 @@ class Ui_MainWindow(object):
         self.bat_count.setFont(font)
         self.bat_count.setStyleSheet("background-color: white;\n"
                                         "color:green;")
-        self.bat_count.setText("")
+        
         self.bat_count.setAlignment(QtCore.Qt.AlignCenter)
         self.bat_count.setObjectName("bat_count")
         self.bowl_count = QtWidgets.QLineEdit(self.groupBox_2)
@@ -93,7 +102,7 @@ class Ui_MainWindow(object):
         self.bowl_count.setFont(font)
         self.bowl_count.setStyleSheet("background-color: white;\n"
                                       "color:green;")
-        self.bowl_count.setText("")
+        
         self.bowl_count.setAlignment(QtCore.Qt.AlignCenter)
         self.bowl_count.setObjectName("bowl_count")
         self.ar_count = QtWidgets.QLineEdit(self.groupBox_2)
@@ -103,7 +112,7 @@ class Ui_MainWindow(object):
         self.ar_count.setFont(font)
         self.ar_count.setStyleSheet("background-color: white;\n"
                                     "color:green;")
-        self.ar_count.setText("")
+        
         self.ar_count.setAlignment(QtCore.Qt.AlignCenter)
         self.ar_count.setObjectName("ar_count")
         self.wk_count = QtWidgets.QLineEdit(self.groupBox_2)
@@ -113,7 +122,7 @@ class Ui_MainWindow(object):
         self.wk_count.setFont(font)
         self.wk_count.setStyleSheet("background-color: white;\n"
                                     "color:green;")
-        self.wk_count.setText("")
+        
         self.wk_count.setAlignment(QtCore.Qt.AlignCenter)
         self.wk_count.setObjectName("wk_count")
         self.bat_count.raise_()
@@ -135,7 +144,7 @@ class Ui_MainWindow(object):
         self.points_avail = QtWidgets.QLineEdit(self.centralwidget)
         self.points_avail.setGeometry(QtCore.QRect(240, 130, 81, 31))
         self.points_avail.setStyleSheet("color:green;")
-        self.points_avail.setText("")
+        
         self.points_avail.setObjectName("points_avail")
         self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBox.setGeometry(QtCore.QRect(80, 170, 380, 420))
@@ -182,7 +191,7 @@ class Ui_MainWindow(object):
         self.points_used = QtWidgets.QLineEdit(self.centralwidget)
         self.points_used.setGeometry(QtCore.QRect(790, 130, 81, 31))
         self.points_used.setStyleSheet("color:green;")
-        self.points_used.setText("")
+        
         self.points_used.setObjectName("points_used")
         self.label_6 = QtWidgets.QLabel(self.centralwidget)
         self.label_6.setGeometry(QtCore.QRect(670, 130, 121, 31))
@@ -215,7 +224,7 @@ class Ui_MainWindow(object):
         self.team_name.setGeometry(QtCore.QRect(130, 5, 211, 31))
         self.team_name.setStyleSheet("border-color: white;\n"
                                         "color:green;")
-        self.team_name.setText("")
+        self.team_name.setText("####")
         self.team_name.setObjectName("team_name")
         self.check_player = QtWidgets.QListWidget(self.groupBox_3)
         self.check_player.setGeometry(QtCore.QRect(65, 70, 250, 331))
@@ -242,19 +251,38 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+
+        self.bat_count.setText("##")
+        self.bowl_count.setText("##")
+        self.ar_count.setText("##")
+        self.wk_count.setText("##")
+        self.points_avail.setText("####")
+        self.points_used.setText("####")
+
+        
         self.New = QtWidgets.QAction(MainWindow)
         self.New.setObjectName("New")
+        
         self.open = QtWidgets.QAction(MainWindow)
         self.open.setObjectName("open")
+        
         self.save = QtWidgets.QAction(MainWindow)
         self.save.setObjectName("save")
+        
         self.evaluate = QtWidgets.QAction(MainWindow)
         self.evaluate.setObjectName("evaluate")
+        
+        
         self.manage.addAction(self.New)
         self.manage.addAction(self.open)
         self.manage.addAction(self.save)
         self.manage.addAction(self.evaluate)
         self.menubar.addAction(self.manage.menuAction())
+
+        self.New.triggered.connect(lambda: self.clicked("New"))
+        self.open.triggered.connect(lambda: self.clicked("open"))
+        self.save.triggered.connect(lambda: self.clicked("save"))
+        self.evaluate.triggered.connect(lambda: self.clicked("evaluate"))
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -287,6 +315,41 @@ class Ui_MainWindow(object):
         self.evaluate.setText(_translate("MainWindow", "Evaluate Score"))
         self.evaluate.setStatusTip(_translate("MainWindow", "Evaluate the score of selected team"))
         self.evaluate.setShortcut(_translate("MainWindow", "Ctrl+E"))
+    
+    def setFields(self):
+        self.bat_count.setText(str(self.bat))
+        self.bowl_count.setText(str(self.bow))
+        self.ar_count.setText(str(self.ar))
+        self.wk_count.setText(str(self.wk))
+        self.points_avail.setText(str(self.avail))
+        self.points_used.setText(str(self.used))
+        self.team_name.setText(str(self.name))
+    
+    def clicked(self,text):
+        if text == "New":
+            name, ok=QtWidgets.QInputDialog.getText(MainWindow, "Team Name", "Enter name of team:")
+            if ok:
+                if name !="":
+                    self.name = name
+                    self.avail = 1000
+                    self.setFields()
+                else:
+                    while ok and name == "":
+                        name, ok=QtWidgets.QInputDialog.getText(MainWindow, "Team Name", "Enter name of team:")
+
+
+
+        elif text == "open":
+            print(text)
+        elif text == "save":
+            print(text)
+
+        elif text == "evaluate":
+            from dialog import Ui_Dialog
+            Dialog = QtWidgets.QDialog()
+            ui = Ui_Dialog()
+            ui.setupUi(Dialog)
+            ret=Dialog.exec()
         
 import resources_rc
 
