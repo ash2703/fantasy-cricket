@@ -27,10 +27,10 @@ def dynamic_entry():
     c.execute("INSERT INTO fantasy VALUES('Kohli',102	,98,	8,	2,	0,	0,	0,	0,	0,	0,	1,	120,	  189,	8257,	28,	43, 'BAT')") 
 
 def fetch_data():
-    c.execute("SELECT player FROM fantasy WHERE ctg ='BAT'")
+    c.execute("SELECT * FROM fantasy")
     out = c.fetchall()
     for row in out:
-        print(row)
+        print(row[0])
     # print(c.fetchall())
 # create_tabel()
 # dynamic_entry()

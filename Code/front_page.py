@@ -20,6 +20,8 @@ class Ui_MainWindow(object):
         self.used = 0
         self.avail = 0
         self.name = ""
+        self.selected = []
+        self.conn = sqlite3.connect('DB\\fantasy-cricket.db')
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1125, 649)
@@ -284,6 +286,15 @@ class Ui_MainWindow(object):
         self.save.triggered.connect(lambda: self.clicked("save"))
         self.evaluate.triggered.connect(lambda: self.clicked("evaluate"))
 
+        self.check_bat.toggled.connect(lambda:self.isToggled(self.check_bat))
+        self.check_bowl.toggled.connect(lambda:self.isToggled(self.check_bowl))
+        self.check_ar.toggled.connect(lambda:self.isToggled(self.check_ar))
+        self.check_wk.toggled.connect(lambda:self.isToggled(self.check_wk))
+
+        self.add_player.itemDoubleClicked.connect(self.addPlayer)
+
+        self.checkBtnState(False)
+
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -297,7 +308,7 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "Wicket-Keeper(WK)"))
         self.label_5.setText(_translate("MainWindow", "Points Available:"))
         self.check_bat.setText(_translate("MainWindow", "BAT"))
-        self.check_bowl.setText(_translate("MainWindow", "BOW"))
+        self.check_bowl.setText(_translate("MainWindow", "BWL"))
         self.check_ar.setText(_translate("MainWindow", "AR"))
         self.check_wk.setText(_translate("MainWindow", "WK"))
         self.label_6.setText(_translate("MainWindow", "Points Used:"))
@@ -316,6 +327,14 @@ class Ui_MainWindow(object):
         self.evaluate.setStatusTip(_translate("MainWindow", "Evaluate the score of selected team"))
         self.evaluate.setShortcut(_translate("MainWindow", "Ctrl+E"))
     
+    def warn(self,msg):
+        Dialog=QtWidgets.QMessageBox()
+        Dialog.setText(msg)
+        Dialog.setWindowTitle("Fantasy Cricket")
+        Dialog.exec()
+
+
+
     def setFields(self):
         self.bat_count.setText(str(self.bat))
         self.bowl_count.setText(str(self.bow))
@@ -323,16 +342,102 @@ class Ui_MainWindow(object):
         self.wk_count.setText(str(self.wk))
         self.points_avail.setText(str(self.avail))
         self.points_used.setText(str(self.used))
-        self.team_name.setText(str(self.name))
+        
+
+    def checkBtnState(self,state):
+        self.check_bat.setEnabled(state)
+        self.check_bowl.setEnabled(state)
+        self.check_ar.setEnabled(state)
+        self.check_wk.setEnabled(state)
     
+    def isToggled(self,category):
+        c = self.conn.cursor()
+        if category.isChecked():
+            c.execute("SELECT player FROM fantasy WHERE ctg ='" + category.text() + "'")
+            data = c.fetchall()
+            self.add_player.clear()
+            # print("list:  ", self.selected)
+            for player in data:
+                if player[0] not in self.selected:
+                    self.add_player.addItem(player[0])
+            
+
+    def addPlayer(self,item):
+        c = self.conn.cursor()
+        # print(item.text())
+        if item.text() not in self.selected:
+            index = self.add_player.row(item)
+            # print(item.text())
+            c.execute("SELECT value , ctg FROM fantasy WHERE player = '" + item.text() + "'")
+            val_ctg = c.fetchone()
+            val = val_ctg[0]
+            category = val_ctg[1]
+            flag = 1
+            if self.bat + self.bow + self.ar + self.wk <11 or self.avail<=0:
+                if category == "BAT":
+                    if self.bat <5:  
+                        self.bat+=1      
+                    else:
+                        flag = 0 
+                        self.warn("batsmen exceeded")
+                elif category == "BWL":
+                    if self.bow < 5:
+                        self.bow +=1 
+                    else: 
+                        flag = 0 
+                        self.warn("bowler exceeded")
+                elif category == "AR":
+                    if self.ar < 5:
+                        self.ar +=1  
+                    else : 
+                        flag = 0 
+                        self.warn("all rounders exceeded")
+                elif category == "WK":
+                    if self.wk < 1:
+                        self.wk +=1
+                    else : 
+                        flag = 0 
+                        self.warn("wicket keeper exceeded")
+            else: self.warn("Players cannot be more than 11")
+
+            if self.avail - val <= 0:
+                self.warn("points have been exhausted")
+            elif flag and self.avail - val > 0:
+                self.used += val
+                self.avail -= val
+                self.setFields()
+                self.selected.append(item.text())
+                self.check_player.addItem(item.text())
+                self.add_player.takeItem(index)
+            flag =1
+
+
+
     def clicked(self,text):
+        
         if text == "New":
+            self.bat = 0
+            self.bow = 0
+            self.ar = 0
+            self.wk = 0
+            self.used = 0
+            self.avail = 0
+            self.name = ""
+            self.selected = []
+            self.check_player.clear()
             name, ok=QtWidgets.QInputDialog.getText(MainWindow, "Team Name", "Enter name of team:")
             if ok:
                 if name !="":
                     self.name = name
                     self.avail = 1000
+                    
+                    # c = self.conn.cursor()
+                    
+                    self.checkBtnState(True)
+                    self.check_bat.setChecked(True)
+                    self.team_name.setText(str(self.name))
                     self.setFields()
+                    
                 else:
                     while ok and name == "":
                         name, ok=QtWidgets.QInputDialog.getText(MainWindow, "Team Name", "Enter name of team:")
@@ -341,8 +446,51 @@ class Ui_MainWindow(object):
 
         elif text == "open":
             print(text)
+            c = self.conn.cursor()
+            c.execute("SELECT name FROM Teams")
+            teams=[]
+            data = c.fetchall()
+            for row in data:
+                teams.append(row[0])
+            team, ok=QtWidgets.QInputDialog.getItem(MainWindow,"Dream","Choose A Team",teams,0,False)
+            c.execute("SELECT players FROM Teams where name = '" + team + "'")
+            names = c.fetchone()
+            names = names[0].split(", ")
+            points = 0
+            for name in names:
+                name = name.strip("'")
+                self.check_player.addItem(name)
+                c.execute("SELECT value,ctg FROM fantasy WHERE player = '" + name +"'")
+                val_ctg = c.fetchone()
+                val = val_ctg[0]
+                ctg = val_ctg[1]
+                points += val
+                if ctg == "BAT":
+                    self.bat+=1
+                elif ctg == "BWL":
+                    self.bow+=1
+                elif ctg == "AR":
+                    self.ar+=1
+                elif ctg == "WK":
+                    self.wk+=1
+            self.used = points
+            self.team_name.setText(str(name))
+            self.setFields()
+
+
         elif text == "save":
-            print(text)
+            c = self.conn.cursor()
+            c.execute("CREATE TABLE IF NOT EXISTS Teams(name text, players text)")
+            if len(self.selected) !=11:
+                self.warn("not enough players")
+
+            else:
+                players = str(self.selected)[1:-1]
+                print(players)
+                sql =  'INSERT INTO Teams VALUES("' +self.name+ '","' +players+ '")'
+                c.execute(sql)
+                self.warn("Team Has been saved")
+                self.conn.commit()
 
         elif text == "evaluate":
             from dialog import Ui_Dialog
@@ -356,6 +504,7 @@ import resources_rc
 
 if __name__ == "__main__":
     import sys
+    import sqlite3
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
