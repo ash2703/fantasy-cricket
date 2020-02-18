@@ -446,6 +446,16 @@ class Ui_MainWindow(object):
 
         elif text == "open":
             print(text)
+            self.bat = 0
+            self.bow = 0
+            self.ar = 0
+            self.wk = 0
+            self.used = 0
+            self.avail = 0
+            self.name = ""
+            self.selected = []
+            self.check_player.clear()
+            self.add_player.clear()
             c = self.conn.cursor()
             c.execute("SELECT name FROM Teams")
             teams=[]
@@ -480,14 +490,14 @@ class Ui_MainWindow(object):
 
         elif text == "save":
             c = self.conn.cursor()
-            c.execute("CREATE TABLE IF NOT EXISTS Teams(name text, players text)")
+            c.execute("CREATE TABLE IF NOT EXISTS Teams(name text, players text,value integer)")
             if len(self.selected) !=11:
                 self.warn("not enough players")
-
             else:
                 players = str(self.selected)[1:-1]
-                print(players)
-                sql =  'INSERT INTO Teams VALUES("' +self.name+ '","' +players+ '")'
+                print(type(self.used))
+                sql ='INSERT INTO Teams VALUES ("'+ self.name +'","' + players +'","'+str(self.used)+'")'
+                print("done")
                 c.execute(sql)
                 self.warn("Team Has been saved")
                 self.conn.commit()
